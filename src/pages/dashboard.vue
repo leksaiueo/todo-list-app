@@ -9,7 +9,6 @@
           </div>
           <div class="flex items-center gap-2 text-gray-400">
             <p class="font-semibold">Kanban</p>
-            <span class="material-icons">add</span>
           </div>
         </div>
 
@@ -144,7 +143,6 @@
                   >
                     Delete
                   </th>
-                  <th class="px-4 py-3 w-8">➕</th>
                 </tr>
               </thead>
               <tbody>
@@ -180,32 +178,70 @@
                   <td class="px-4 py-3">
                     <div class="flex gap-1 items-center">
                       <div
-                        v-if="title.developer.length === 0"
+                        v-if="
+                          title.developer.length === 0 &&
+                          !(
+                            editingCell &&
+                            editingCell.id === title.id &&
+                            editingCell.field === 'developer'
+                          )
+                        "
                         v-on:click="startEditing(title.id, 'developer')"
                         class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center cursor-pointer"
                       >
                         <span class="text-gray-400">👤</span>
                       </div>
                       <div
+                        v-if="
+                          !(
+                            editingCell &&
+                            editingCell.id === title.id &&
+                            editingCell.field === 'developer'
+                          )
+                        "
                         v-for="(dev, idx) in title.developer"
                         v-bind:key="idx"
                         v-on:click="startEditing(title.id, 'developer')"
                         class="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-xs font-semibold cursor-pointer"
+                        v-bind:title="dev"
                       >
                         {{ getInitials(dev) }}
                       </div>
-                      <input
+                      <div
                         v-if="
                           editingCell &&
                           editingCell.id === title.id &&
                           editingCell.field === 'developer'
                         "
-                        type="text"
-                        v-on:keyup.enter="addDeveloper(title, $event)"
-                        v-on:blur="stopEditing"
-                        placeholder="Name"
-                        class="ml-2 bg-gray-700 text-white px-2 py-1 rounded text-sm"
-                      />
+                        class="flex flex-col gap-1"
+                      >
+                        <div
+                          v-for="(dev, idx) in title.developer"
+                          v-bind:key="idx"
+                          class="flex items-center gap-1"
+                        >
+                          <input
+                            type="text"
+                            v-model="title.developer[idx]"
+                            class="bg-gray-700 text-white px-2 py-1 rounded text-sm w-20"
+                            v-on:blur="stopEditing"
+                            v-on:keyup.enter="stopEditing"
+                          />
+                          <button
+                            v-on:click="removeDeveloper(title, idx)"
+                            class="text-red-500 hover:text-red-700 text-sm"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                        <input
+                          type="text"
+                          v-on:keyup.enter="addDeveloper(title, $event)"
+                          v-on:blur="stopEditing"
+                          placeholder="Add new developer"
+                          class="bg-gray-700 text-white px-2 py-1 rounded text-sm w-32"
+                        />
+                      </div>
                     </div>
                   </td>
                   <td class="px-4 py-3">
@@ -295,7 +331,7 @@
                       v-on:click="startEditing(title.id, 'type')"
                       v-bind:class="[
                         typeColors[title.type],
-                        'text-gray-800 px-3 py-1 rounded text-sm text-center cursor-pointer',
+                        ' text-white px-3 py-1 rounded text-sm text-center cursor-pointer',
                       ]"
                     >
                       {{ title.type }}
@@ -373,34 +409,21 @@
                     </button>
                   </td>
                 </tr>
-                <tr>
-                  <td colspan="11" class="px-4 py-2">
-                    <button
-                      v-on:click="addNewtitle"
-                      class="text-gray-400 hover:text-white text-sm flex items-center gap-2"
-                    >
-                      <span>➕</span> Add Task
-                    </button>
-                  </td>
-                </tr>
               </tbody>
             </table>
-          </div>
-        </div>
 
-        <!-- STATUS TODOLIST -->
-        <div class="table-container rounded-lg overflow-hidden">
-          <div class="overflow-x-auto grid-flow-col">
+            <!-- STATUS TODOLIST -->
             <table class="w-full">
-              <div class="grid grid-cols-5 gap-4 p-4 border-t border-gray-700">
-                <div class="col-span-1"></div>
+              <div class="grid grid-cols-4 gap-10 p-6 border-t border-gray-700">
                 <div>
                   <div class="flex gap-1 h-8 w-full rounded-lg">
                     <div
                       v-for="(percentageItem, idx) in statusPercentages"
                       v-bind:key="idx"
                       v-bind:class="percentageItem.color"
-                      v-bind:style="{ width: percentageItem.percentage + '%' }"
+                      v-bind:style="{
+                        width: percentageItem.percentage + '%',
+                      }"
                       class="flex items-center justify-center text-white text-xs font-semibold"
                     >
                       {{ Math.round(percentageItem.percentage) }}%
@@ -443,7 +466,6 @@
                   </div>
                 </div>
                 <div class="flex gap-2">
-                  <div class="flex-1 bg-gray-700 rounded h-8"></div>
                   <div class="flex-1 text-center">
                     <div class="text-sm">{{ totalEstimatedSP }} SP</div>
                     <div class="text-xs text-gray-400">sum</div>
@@ -464,54 +486,69 @@
 
 <script setup>
 import { ref, computed } from "vue";
+import person from "../data/person.json";
 
 const searchQuery = ref("");
 const showDeveloperFilter = ref(false);
 const showSortMenu = ref(false);
 const editingCell = ref(null);
-const titles = ref([
-  {
-    id: 1,
-    title: "Sample Task 1",
-    developer: ["Alice", "Bob"],
-    status: "In Progress",
-    priority: "High",
-    type: "Bug",
-    date: "2023-10-01",
-    estimatedSP: 5,
-    actualSP: 3,
-  },
-  {
-    id: 2,
-    title: "Sample Task 2",
-    developer: ["Charlie"],
-    status: "Done",
-    priority: "Medium",
-    type: "Feature",
-    date: "2023-10-05",
-    estimatedSP: 8,
-    actualSP: 8,
-  },
-  // Add more sample data as needed
+const titles = ref(
+  person.data.map((task, index) => ({
+    id: index + 1,
+    title: task.title,
+    developer: task.developer
+      ? task.developer.split(", ").filter((name) => name.trim())
+      : [],
+    status: task.status,
+    priority: task.priority,
+    type: task.type,
+    date: new Date().toISOString().split("T")[0], // Set to today's date
+    estimatedSP: task["Estimated SP"] || 0,
+    actualSP: task["Actual SP"] || 0,
+  }))
+);
+const allDeveloper = computed(() => {
+  const devs = new Set();
+  titles.value.forEach((title) => {
+    title.developer.forEach((dev) => devs.add(dev));
+  });
+  return Array.from(devs).sort();
+});
+const statusOptions = ref([
+  "Ready to start",
+  "In Progress",
+  "Waiting for review",
+  "Pending Deploy",
+  "Done",
+  "Stuck",
 ]);
-const allDeveloper = ref(["Alice", "Bob", "Charlie", "David"]);
-const statusOptions = ref(["To Do", "In Progress", "Done"]);
-const priorityOptions = ref(["Low", "Medium", "High"]);
-const typeOptions = ref(["Bug", "Feature", "Enhancement"]);
+const priorityOptions = ref([
+  "Critical",
+  "High",
+  "Medium",
+  "Low",
+  "Best Effort",
+]);
+const typeOptions = ref(["Bug", "Feature Enhancements", "Other"]);
 const statusColors = ref({
-  "To Do": "bg-gray-500",
+  "Ready to start": "bg-blue-400",
   "In Progress": "bg-yellow-500",
+  "Waiting for review": "bg-orange-400",
+  "Pending Deploy": "bg-purple-500",
+  Stuck: "bg-red-500",
   Done: "bg-green-500",
 });
 const priorityColors = ref({
+  Critical: "bg-red-500",
+  High: "bg-orange-500",
+  Medium: "bg-purple-500",
   Low: "bg-blue-500",
-  Medium: "bg-orange-500",
-  High: "bg-red-500",
+  "Best Effort": "bg-green-500",
 });
 const typeColors = ref({
-  Bug: "bg-red-200",
-  Feature: "bg-blue-200",
-  Enhancement: "bg-green-200",
+  Bug: "bg-red-500",
+  "Feature Enhancements": "bg-blue-500",
+  Other: "bg-green-500",
 });
 const sortConfig = ref({});
 
@@ -615,9 +652,9 @@ const addNewTask = () => {
     id: newId,
     title: "New Task",
     developer: [],
-    status: "To Do",
-    priority: "Medium",
-    type: "Feature",
+    status: "Set To Do",
+    priority: "Set Priority",
+    type: "Feature Enhancements",
     date: new Date().toISOString().split("T")[0],
     estimatedSP: 0,
     actualSP: 0,
@@ -672,6 +709,10 @@ const addDeveloper = (title, event) => {
   }
   event.target.value = "";
   stopEditing();
+};
+
+const removeDeveloper = (title, idx) => {
+  title.developer.splice(idx, 1);
 };
 
 const deleteTask = (id) => {
