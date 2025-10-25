@@ -21,7 +21,7 @@
             class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-medium"
           >
             New Task
-            <span class="material-icons">add</span>
+            <span class="material-icons pl-2">add</span>
           </button>
 
           <div class="relative">
@@ -480,6 +480,144 @@
             </div>
           </div>
         </div>
+
+        <!-- modal tambah task -->
+        <div
+          v-if="showModal"
+          class="fixed inset-0 modal-overlay flex items-center justify-center z-50"
+          v-on:click.self="closeModal"
+        >
+          <div class="bg-gray-800 rounded-lg p-6 w-full max-w-2xl mx-4">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-2xl font-bold text-white">New Task</h2>
+              <button
+                v-on:click="closeModal"
+                class="text-gray-400 hover:text-white text-2xl"
+              >
+                ×
+              </button>
+            </div>
+
+            <form v-on:submit.prevent="saveTask" class="space-y-4">
+              <div>
+                <label class="block text-gray-300 mb-2">Task Name</label>
+                <input
+                  type="text"
+                  v-model="formData.title"
+                  required
+                  class="w-full bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              <div>
+                <label class="block text-gray-300 mb-2">Developer</label>
+                <input
+                  type="text"
+                  v-model="formData.developer"
+                  placeholder="Enter developer name"
+                  class="w-full bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-gray-300 mb-2">Status</label>
+                  <select
+                    v-model="formData.status"
+                    class="w-full bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-blue-500"
+                  >
+                    <option
+                      v-for="opt in statusOptions"
+                      v-bind:key="opt"
+                      v-bind:value="opt"
+                    >
+                      {{ opt }}
+                    </option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-gray-300 mb-2">Priority</label>
+                  <select
+                    v-model="formData.priority"
+                    class="w-full bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-blue-500"
+                  >
+                    <option
+                      v-for="opt in priorityOptions"
+                      v-bind:key="opt"
+                      v-bind:value="opt"
+                    >
+                      {{ opt }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-gray-300 mb-2">Type</label>
+                  <select
+                    v-model="formData.type"
+                    class="w-full bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-blue-500"
+                  >
+                    <option
+                      v-for="opt in typeOptions"
+                      v-bind:key="opt"
+                      v-bind:value="opt"
+                    >
+                      {{ opt }}
+                    </option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-gray-300 mb-2">Date</label>
+                  <input
+                    type="date"
+                    v-model="formData.date"
+                    class="w-full bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-gray-300 mb-2">Estimated SP</label>
+                  <input
+                    type="number"
+                    v-model.number="formData.estimatedSP"
+                    class="w-full bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label class="block text-gray-300 mb-2">Actual SP</label>
+                  <input
+                    type="number"
+                    v-model.number="formData.actualSP"
+                    class="w-full bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div class="flex gap-3 pt-4">
+                <button
+                  type="submit"
+                  class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium"
+                >
+                  Save Task
+                </button>
+                <button
+                  type="button"
+                  v-on:click="closeModal"
+                  class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-medium"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -492,7 +630,18 @@ import person from "../data/person.json";
 const searchQuery = ref("");
 const showDeveloperFilter = ref(false);
 const showSortMenu = ref(false);
+const showModal = ref(false);
 const editingCell = ref(null);
+const formData = ref({
+  title: "",
+  developer: "",
+  status: "Ready to start",
+  priority: "Medium",
+  type: "Feature Enhancements",
+  date: new Date().toISOString().split("T")[0],
+  estimatedSP: 0,
+  actualSP: 0,
+});
 const titles = ref(
   person.data.map((task, index) => ({
     id: index + 1,
@@ -648,18 +797,38 @@ const totalPercentage = (percentages) => {
 };
 
 const addNewTask = () => {
-  const newId = Math.max(...titles.value.map((t) => t.id), 0) + 1;
-  titles.value.push({
-    id: newId,
-    title: "New Task",
-    developer: [],
-    status: "Set To Do",
-    priority: "Set Priority",
+  showModal.value = true;
+};
+
+const closeModal = () => {
+  showModal.value = false;
+  formData.value = {
+    title: "",
+    developer: "",
+    status: "Ready to start",
+    priority: "Medium",
     type: "Feature Enhancements",
     date: new Date().toISOString().split("T")[0],
     estimatedSP: 0,
     actualSP: 0,
-  });
+  };
+};
+
+const saveTask = () => {
+  const newId = Math.max(...titles.value.map((t) => t.id), 0) + 1;
+  const newTask = {
+    id: newId,
+    title: formData.value.title,
+    developer: formData.value.developer ? [formData.value.developer] : [],
+    status: formData.value.status,
+    priority: formData.value.priority,
+    type: formData.value.type,
+    date: formData.value.date,
+    estimatedSP: formData.value.estimatedSP,
+    actualSP: formData.value.actualSP,
+  };
+  titles.value.push(newTask);
+  closeModal();
 };
 
 const selectDeveloper = (dev) => {

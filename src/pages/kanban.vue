@@ -2,7 +2,7 @@
   <div id="app">
     <div class="app-container text-white p-6">
       <div class="max-w-7xl mx-auto">
-        <!-- Header -->
+        <!-- header -->
         <div class="flex items-center gap-4 mb-6">
           <router-link to="/" class="flex items-center gap-2 text-gray-400">
             <span class="material-icons">home</span>
@@ -16,20 +16,20 @@
           </router-link>
         </div>
 
-        <!-- Toolbar -->
+        <!-- toolbar -->
         <div class="flex items-center gap-3 mb-6 flex-wrap">
           <button
             v-on:click="showModal = true"
             class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 font-medium"
           >
-            New task
-            <span>▼</span>
+            New Task
+            <span class="material-icons">add</span>
           </button>
 
           <div class="relative">
             <input
               type="text"
-              placeholder="🔍 Search"
+              placeholder="Search Task"
               v-model="searchQuery"
               class="bg-gray-800 text-white pl-4 pr-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-blue-500"
             />
@@ -88,7 +88,7 @@
             </div>
           </div>
 
-          <!-- Status Legend -->
+          <!-- Statuss -->
           <div class="flex gap-2 ml-auto">
             <div class="w-12 h-8 bg-blue-500 rounded"></div>
             <div class="w-12 h-8 bg-orange-400 rounded"></div>
@@ -135,7 +135,8 @@
                   >
                     {{ task.priority }}
                   </span>
-                  <span class="text-gray-400 text-xs px-2 py-1"
+                  <span
+                    class="bg-gray-600 text-gray-200 px-2 py-1 rounded text-xs"
                     >{{ task.estimatedSP }} SP</span
                   >
                   <span
@@ -161,15 +162,13 @@
                   >
                     {{ getInitials(dev) }}
                   </div>
-                  <span class="text-gray-500 ml-auto">💬</span>
-                  <span class="text-gray-500">📋</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Modal -->
+        <!-- modal tambah task -->
         <div
           v-if="showModal"
           class="fixed inset-0 modal-overlay flex items-center justify-center z-50"
@@ -389,6 +388,9 @@ const typeColors = ref({
   Other: "bg-purple-300",
   Bug: "bg-red-400",
 });
+// const estimatedSPColors = ref({
+//   {$sp} : "bg-gray-500";
+// });
 
 const allDevelopers = computed(() => {
   const devs = new Set();
