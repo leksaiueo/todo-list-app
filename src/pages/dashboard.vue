@@ -3,13 +3,16 @@
     <div class="app-container text-white p-6">
       <div class="max-w-7xl mx-auto">
         <div class="flex items-center gap-4 mb-6">
-          <div class="flex items-center gap-2 text-gray-400">
+          <router-link to="/" class="flex items-center gap-2 text-gray-400">
             <span class="material-icons">home</span>
             <p class="font-semibold">Main Table</p>
-          </div>
-          <div class="flex items-center gap-2 text-gray-400">
+          </router-link>
+          <router-link
+            to="/kanban"
+            class="flex items-center gap-2 text-gray-400"
+          >
             <p class="font-semibold">Kanban</p>
-          </div>
+          </router-link>
         </div>
 
         <div class="flex items-center gap-3 mb-6 flex-wrap">
@@ -58,9 +61,9 @@
                 {{ dev }}
               </div>
             </div>
-          </div>
 
-          <!--sort buttion -->
+            <!--sort buttion -->
+          </div>
           <div class="relative">
             <button
               v-on:click="showSortMenu = !showSortMenu"
@@ -85,335 +88,333 @@
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- tables -->
-        <div class="table-container rounded-lg overflow-hidden">
-          <div class="overflow-x-auto">
-            <table class="w-full">
-              <thead class="bg-gray-800 border-b border-gray-700">
-                <tr>
-                  <th
-                    class="px-4 py-3 text-center text-gray-400 font-lg text-md w-12 table-fixed"
-                  >
-                    <input type="checkbox" class="rounded" />
-                  </th>
-                  <th
-                    class="px-4 py-3 text-center text-gray-400 font-lg text-md"
-                  >
-                    Task
-                  </th>
-                  <th
-                    class="px-4 py-3 text-center text-gray-400 font-lg text-md"
-                  >
-                    Developer
-                  </th>
-                  <th
-                    class="px-4 py-3 text-center text-gray-400 font-lg text-md"
-                  >
-                    Status
-                  </th>
-                  <th
-                    class="px-4 py-3 text-center text-gray-400 font-lg text-md"
-                  >
-                    Priority
-                  </th>
-                  <th
-                    class="px-4 py-3 text-center text-gray-400 font-lg text-md"
-                  >
-                    Type
-                  </th>
-                  <th
-                    class="px-4 py-3 text-center text-gray-400 font-lg text-md"
-                  >
-                    Date
-                  </th>
-                  <th
-                    class="px-4 py-3 text-center text-gray-400 font-lg text-md"
-                  >
-                    Estimated SP
-                  </th>
-                  <th
-                    class="px-4 py-3 text-center text-gray-400 font-lg text-md"
-                  >
-                    Actual SP
-                  </th>
-                  <th
-                    class="px-4 py-3 text-center text-gray-400 font-lg text-md"
-                  >
-                    Delete
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="title in filteredtitles"
-                  v-bind:key="title.id"
-                  class="border-b border-gray-700"
-                >
-                  <td class="px-4 py-3">
-                    <input type="checkbox" class="rounded" />
-                  </td>
-                  <td class="px-4 py-3">
-                    <input
-                      v-if="
-                        editingCell &&
-                        editingCell.id === title.id &&
-                        editingCell.field === 'title'
-                      "
-                      type="text"
-                      v-model="title.title"
-                      v-on:blur="stopEditing"
-                      v-on:keyup.enter="stopEditing"
-                      class="bg-gray-700 text-white px-2 py-1 rounded text-sm w-full"
-                    />
-                    <div
-                      v-else
-                      v-on:click="startEditing(title.id, 'title')"
-                      class="text-gray-300 text-sm cursor-pointer"
+          <!-- tables -->
+          <div class="table-container rounded-lg overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead class="bg-gray-800 border-b border-gray-700">
+                  <tr>
+                    <th
+                      class="px-4 py-3 text-center text-gray-400 font-lg text-md w-12 table-fixed"
                     >
-                      {{ title.title }}
-                    </div>
-                  </td>
-                  <td class="px-4 py-3">
-                    <div class="flex gap-1 items-center">
-                      <div
-                        v-if="
-                          title.developer.length === 0 &&
-                          !(
-                            editingCell &&
-                            editingCell.id === title.id &&
-                            editingCell.field === 'developer'
-                          )
-                        "
-                        v-on:click="startEditing(title.id, 'developer')"
-                        class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center cursor-pointer"
-                      >
-                        <span class="text-gray-400">👤</span>
-                      </div>
-                      <div
-                        v-if="
-                          !(
-                            editingCell &&
-                            editingCell.id === title.id &&
-                            editingCell.field === 'developer'
-                          )
-                        "
-                        v-for="(dev, idx) in title.developer"
-                        v-bind:key="idx"
-                        v-on:click="startEditing(title.id, 'developer')"
-                        class="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-xs font-semibold cursor-pointer"
-                        v-bind:title="dev"
-                      >
-                        {{ getInitials(dev) }}
-                      </div>
-                      <div
+                      <input type="checkbox" class="rounded" />
+                    </th>
+                    <th
+                      class="px-4 py-3 text-center text-gray-400 font-lg text-md"
+                    >
+                      Task
+                    </th>
+                    <th
+                      class="px-4 py-3 text-center text-gray-400 font-lg text-md"
+                    >
+                      Developer
+                    </th>
+                    <th
+                      class="px-4 py-3 text-center text-gray-400 font-lg text-md"
+                    >
+                      Status
+                    </th>
+                    <th
+                      class="px-4 py-3 text-center text-gray-400 font-lg text-md"
+                    >
+                      Priority
+                    </th>
+                    <th
+                      class="px-4 py-3 text-center text-gray-400 font-lg text-md"
+                    >
+                      Type
+                    </th>
+                    <th
+                      class="px-4 py-3 text-center text-gray-400 font-lg text-md"
+                    >
+                      Date
+                    </th>
+                    <th
+                      class="px-4 py-3 text-center text-gray-400 font-lg text-md"
+                    >
+                      Estimated SP
+                    </th>
+                    <th
+                      class="px-4 py-3 text-center text-gray-400 font-lg text-md"
+                    >
+                      Actual SP
+                    </th>
+                    <th
+                      class="px-4 py-3 text-center text-gray-400 font-lg text-md"
+                    >
+                      Delete
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="title in filteredtitles"
+                    v-bind:key="title.id"
+                    class="border-b border-gray-700"
+                  >
+                    <td class="px-4 py-3">
+                      <input type="checkbox" class="rounded" />
+                    </td>
+                    <td class="px-4 py-3">
+                      <input
                         v-if="
                           editingCell &&
                           editingCell.id === title.id &&
-                          editingCell.field === 'developer'
+                          editingCell.field === 'title'
                         "
-                        class="flex flex-col gap-1"
+                        type="text"
+                        v-model="title.title"
+                        v-on:blur="stopEditing"
+                        v-on:keyup.enter="stopEditing"
+                        class="bg-gray-700 text-white px-2 py-1 rounded text-sm w-full"
+                      />
+                      <div
+                        v-else
+                        v-on:click="startEditing(title.id, 'title')"
+                        class="text-gray-300 text-sm cursor-pointer"
                       >
+                        {{ title.title }}
+                      </div>
+                    </td>
+                    <td class="px-4 py-3">
+                      <div class="flex gap-1 items-center">
                         <div
+                          v-if="
+                            title.developer.length === 0 &&
+                            !(
+                              editingCell &&
+                              editingCell.id === title.id &&
+                              editingCell.field === 'developer'
+                            )
+                          "
+                          v-on:click="startEditing(title.id, 'developer')"
+                          class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center cursor-pointer"
+                        >
+                          <span class="text-gray-400">👤</span>
+                        </div>
+                        <div
+                          v-if="
+                            !(
+                              editingCell &&
+                              editingCell.id === title.id &&
+                              editingCell.field === 'developer'
+                            )
+                          "
                           v-for="(dev, idx) in title.developer"
                           v-bind:key="idx"
-                          class="flex items-center gap-1"
+                          v-on:click="startEditing(title.id, 'developer')"
+                          class="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-xs font-semibold cursor-pointer"
+                          v-bind:title="dev"
                         >
+                          {{ getInitials(dev) }}
+                        </div>
+                        <div
+                          v-if="
+                            editingCell &&
+                            editingCell.id === title.id &&
+                            editingCell.field === 'developer'
+                          "
+                          class="flex flex-col gap-1"
+                        >
+                          <div
+                            v-for="(dev, idx) in title.developer"
+                            v-bind:key="idx"
+                            class="flex items-center gap-1"
+                          >
+                            <input
+                              type="text"
+                              v-model="title.developer[idx]"
+                              class="bg-gray-700 text-white px-2 py-1 rounded text-sm w-20"
+                              v-on:blur="stopEditing"
+                              v-on:keyup.enter="stopEditing"
+                            />
+                            <button
+                              v-on:click="removeDeveloper(title, idx)"
+                              class="text-red-500 hover:text-red-700 text-sm"
+                            >
+                              ✕
+                            </button>
+                          </div>
                           <input
                             type="text"
-                            v-model="title.developer[idx]"
-                            class="bg-gray-700 text-white px-2 py-1 rounded text-sm w-20"
+                            v-on:keyup.enter="addDeveloper(title, $event)"
                             v-on:blur="stopEditing"
-                            v-on:keyup.enter="stopEditing"
+                            placeholder="Add new developer"
+                            class="bg-gray-700 text-white px-2 py-1 rounded text-sm w-32"
                           />
-                          <button
-                            v-on:click="removeDeveloper(title, idx)"
-                            class="text-red-500 hover:text-red-700 text-sm"
-                          >
-                            ✕
-                          </button>
                         </div>
-                        <input
-                          type="text"
-                          v-on:keyup.enter="addDeveloper(title, $event)"
-                          v-on:blur="stopEditing"
-                          placeholder="Add new developer"
-                          class="bg-gray-700 text-white px-2 py-1 rounded text-sm w-32"
-                        />
                       </div>
-                    </div>
-                  </td>
-                  <td class="px-4 py-3">
-                    <select
-                      v-if="
-                        editingCell &&
-                        editingCell.id === title.id &&
-                        editingCell.field === 'status'
-                      "
-                      v-model="title.status"
-                      v-on:blur="stopEditing"
-                      v-on:change="stopEditing"
-                      class="bg-gray-700 text-white px-2 py-1 rounded w-full text-sm"
-                    >
-                      <option
-                        v-for="opt in statusOptions"
-                        v-bind:key="opt"
-                        v-bind:value="opt"
+                    </td>
+                    <td class="px-4 py-3">
+                      <select
+                        v-if="
+                          editingCell &&
+                          editingCell.id === title.id &&
+                          editingCell.field === 'status'
+                        "
+                        v-model="title.status"
+                        v-on:blur="stopEditing"
+                        v-on:change="stopEditing"
+                        class="bg-gray-700 text-white px-2 py-1 rounded w-full text-sm"
                       >
-                        {{ opt }}
-                      </option>
-                    </select>
-                    <div
-                      v-else
-                      v-on:click="startEditing(title.id, 'status')"
-                      v-bind:class="[
-                        statusColors[title.status],
-                        'text-white px-3 py-1 rounded text-sm text-center cursor-pointer',
-                      ]"
-                    >
-                      {{ title.status }}
-                    </div>
-                  </td>
-                  <td class="px-4 py-3">
-                    <select
-                      v-if="
-                        editingCell &&
-                        editingCell.id === title.id &&
-                        editingCell.field === 'priority'
-                      "
-                      v-model="title.priority"
-                      v-on:blur="stopEditing"
-                      v-on:change="stopEditing"
-                      class="bg-gray-700 text-white px-2 py-1 rounded w-full text-sm"
-                    >
-                      <option
-                        v-for="opt in priorityOptions"
-                        v-bind:key="opt"
-                        v-bind:value="opt"
+                        <option
+                          v-for="opt in statusOptions"
+                          v-bind:key="opt"
+                          v-bind:value="opt"
+                        >
+                          {{ opt }}
+                        </option>
+                      </select>
+                      <div
+                        v-else
+                        v-on:click="startEditing(title.id, 'status')"
+                        v-bind:class="[
+                          statusColors[title.status],
+                          'text-white px-3 py-1 rounded text-sm text-center cursor-pointer',
+                        ]"
                       >
-                        {{ opt }}
-                      </option>
-                    </select>
-                    <div
-                      v-else
-                      v-on:click="startEditing(title.id, 'priority')"
-                      v-bind:class="[
-                        priorityColors[title.priority],
-                        'text-white px-3 py-1 rounded text-sm text-center cursor-pointer',
-                      ]"
-                    >
-                      {{ title.priority }}
-                    </div>
-                  </td>
-                  <td class="px-4 py-3">
-                    <select
-                      v-if="
-                        editingCell &&
-                        editingCell.id === title.id &&
-                        editingCell.field === 'type'
-                      "
-                      v-model="title.type"
-                      v-on:blur="stopEditing"
-                      v-on:change="stopEditing"
-                      class="bg-gray-700 text-white px-2 py-1 rounded w-full text-sm"
-                    >
-                      <option
-                        v-for="opt in typeOptions"
-                        v-bind:key="opt"
-                        v-bind:value="opt"
+                        {{ title.status }}
+                      </div>
+                    </td>
+                    <td class="px-4 py-3">
+                      <select
+                        v-if="
+                          editingCell &&
+                          editingCell.id === title.id &&
+                          editingCell.field === 'priority'
+                        "
+                        v-model="title.priority"
+                        v-on:blur="stopEditing"
+                        v-on:change="stopEditing"
+                        class="bg-gray-700 text-white px-2 py-1 rounded w-full text-sm"
                       >
-                        {{ opt }}
-                      </option>
-                    </select>
-                    <div
-                      v-else
-                      v-on:click="startEditing(title.id, 'type')"
-                      v-bind:class="[
-                        typeColors[title.type],
-                        ' text-white px-3 py-1 rounded text-sm text-center cursor-pointer',
-                      ]"
-                    >
-                      {{ title.type }}
-                    </div>
-                  </td>
-                  <td class="px-4 py-3">
-                    <input
-                      v-if="
-                        editingCell &&
-                        editingCell.id === title.id &&
-                        editingCell.field === 'date'
-                      "
-                      type="date"
-                      v-model="title.date"
-                      v-on:blur="stopEditing"
-                      v-on:change="stopEditing"
-                      class="bg-gray-700 text-white px-2 py-1 rounded text-sm w-full"
-                    />
-                    <div
-                      v-else
-                      v-on:click="startEditing(title.id, 'date')"
-                      class="text-gray-300 text-sm cursor-pointer"
-                    >
-                      {{ formatDate(title.date) }}
-                    </div>
-                  </td>
-                  <td class="px-4 py-3">
-                    <input
-                      v-if="
-                        editingCell &&
-                        editingCell.id === title.id &&
-                        editingCell.field === 'estimatedSP'
-                      "
-                      type="number"
-                      v-model.number="title.estimatedSP"
-                      v-on:blur="stopEditing"
-                      v-on:keyup.enter="stopEditing"
-                      class="bg-gray-700 text-white px-2 py-1 rounded text-sm w-full"
-                    />
-                    <div
-                      v-else
-                      v-on:click="startEditing(title.id, 'estimatedSP')"
-                      class="text-gray-300 text-sm cursor-pointer"
-                    >
-                      {{ title.estimatedSP }} SP
-                    </div>
-                  </td>
-                  <td class="px-4 py-3">
-                    <input
-                      v-if="
-                        editingCell &&
-                        editingCell.id === title.id &&
-                        editingCell.field === 'actualSP'
-                      "
-                      type="number"
-                      v-model.number="title.actualSP"
-                      v-on:blur="stopEditing"
-                      v-on:keyup.enter="stopEditing"
-                      class="bg-gray-700 text-white px-2 py-1 rounded text-sm w-full"
-                    />
-                    <div
-                      v-else
-                      v-on:click="startEditing(title.id, 'actualSP')"
-                      class="text-gray-300 text-sm cursor-pointer"
-                    >
-                      {{ title.actualSP }} SP
-                    </div>
-                  </td>
-                  <td class="px-4 py-3">
-                    <button
-                      v-on:click="deleteTask(title.id)"
-                      class="text-red-500 hover:text-red-700 text-sm cursor-pointer"
-                    >
-                      🗑️
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                        <option
+                          v-for="opt in priorityOptions"
+                          v-bind:key="opt"
+                          v-bind:value="opt"
+                        >
+                          {{ opt }}
+                        </option>
+                      </select>
+                      <div
+                        v-else
+                        v-on:click="startEditing(title.id, 'priority')"
+                        v-bind:class="[
+                          priorityColors[title.priority],
+                          'text-white px-3 py-1 rounded text-sm text-center cursor-pointer',
+                        ]"
+                      >
+                        {{ title.priority }}
+                      </div>
+                    </td>
+                    <td class="px-4 py-3">
+                      <select
+                        v-if="
+                          editingCell &&
+                          editingCell.id === title.id &&
+                          editingCell.field === 'type'
+                        "
+                        v-model="title.type"
+                        v-on:blur="stopEditing"
+                        v-on:change="stopEditing"
+                        class="bg-gray-700 text-white px-2 py-1 rounded w-full text-sm"
+                      >
+                        <option
+                          v-for="opt in typeOptions"
+                          v-bind:key="opt"
+                          v-bind:value="opt"
+                        >
+                          {{ opt }}
+                        </option>
+                      </select>
+                      <div
+                        v-else
+                        v-on:click="startEditing(title.id, 'type')"
+                        v-bind:class="[
+                          typeColors[title.type],
+                          ' text-white px-3 py-1 rounded text-sm text-center cursor-pointer',
+                        ]"
+                      >
+                        {{ title.type }}
+                      </div>
+                    </td>
+                    <td class="px-4 py-3">
+                      <input
+                        v-if="
+                          editingCell &&
+                          editingCell.id === title.id &&
+                          editingCell.field === 'date'
+                        "
+                        type="date"
+                        v-model="title.date"
+                        v-on:blur="stopEditing"
+                        v-on:change="stopEditing"
+                        class="bg-gray-700 text-white px-2 py-1 rounded text-sm w-full"
+                      />
+                      <div
+                        v-else
+                        v-on:click="startEditing(title.id, 'date')"
+                        class="text-gray-300 text-sm cursor-pointer"
+                      >
+                        {{ formatDate(title.date) }}
+                      </div>
+                    </td>
+                    <td class="px-4 py-3">
+                      <input
+                        v-if="
+                          editingCell &&
+                          editingCell.id === title.id &&
+                          editingCell.field === 'estimatedSP'
+                        "
+                        type="number"
+                        v-model.number="title.estimatedSP"
+                        v-on:blur="stopEditing"
+                        v-on:keyup.enter="stopEditing"
+                        class="bg-gray-700 text-white px-2 py-1 rounded text-sm w-full"
+                      />
+                      <div
+                        v-else
+                        v-on:click="startEditing(title.id, 'estimatedSP')"
+                        class="text-gray-300 text-sm cursor-pointer"
+                      >
+                        {{ title.estimatedSP }} SP
+                      </div>
+                    </td>
+                    <td class="px-4 py-3">
+                      <input
+                        v-if="
+                          editingCell &&
+                          editingCell.id === title.id &&
+                          editingCell.field === 'actualSP'
+                        "
+                        type="number"
+                        v-model.number="title.actualSP"
+                        v-on:blur="stopEditing"
+                        v-on:keyup.enter="stopEditing"
+                        class="bg-gray-700 text-white px-2 py-1 rounded text-sm w-full"
+                      />
+                      <div
+                        v-else
+                        v-on:click="startEditing(title.id, 'actualSP')"
+                        class="text-gray-300 text-sm cursor-pointer"
+                      >
+                        {{ title.actualSP }} SP
+                      </div>
+                    </td>
+                    <td class="px-4 py-3">
+                      <button
+                        v-on:click="deleteTask(title.id)"
+                        class="text-red-500 hover:text-red-700 text-sm cursor-pointer"
+                      >
+                        🗑️
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
 
-            <!-- STATUS TODOLIST -->
-            <table class="w-full">
+              <!-- STATUS TODOLIST -->
               <div class="grid grid-cols-4 gap-10 p-6 border-t border-gray-700">
                 <div>
                   <div class="flex gap-1 h-8 w-full rounded-lg">
@@ -476,7 +477,7 @@
                   </div>
                 </div>
               </div>
-            </table>
+            </div>
           </div>
         </div>
       </div>
