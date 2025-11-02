@@ -498,6 +498,7 @@
               </button>
             </div>
 
+            <!-- pengisian new task -->
             <form v-on:submit.prevent="saveTask" class="space-y-4">
               <div>
                 <label class="block text-gray-300 mb-2">Task Name</label>
@@ -642,6 +643,7 @@ const formData = ref({
   estimatedSP: 0,
   actualSP: 0,
 });
+
 const titles = ref(
   person.data.map((task, index) => ({
     id: index + 1,
@@ -657,6 +659,7 @@ const titles = ref(
     actualSP: task["Actual SP"] || 0,
   }))
 );
+
 const allDeveloper = computed(() => {
   const devs = new Set();
   titles.value.forEach((title) => {
@@ -664,6 +667,7 @@ const allDeveloper = computed(() => {
   });
   return Array.from(devs).sort();
 });
+
 const statusOptions = ref([
   "Ready to start",
   "In Progress",
@@ -672,6 +676,7 @@ const statusOptions = ref([
   "Done",
   "Stuck",
 ]);
+
 const priorityOptions = ref([
   "Critical",
   "High",
@@ -679,7 +684,9 @@ const priorityOptions = ref([
   "Low",
   "Best Effort",
 ]);
+
 const typeOptions = ref(["Bug", "Feature Enhancements", "Other"]);
+
 const statusColors = ref({
   "Ready to start": "bg-blue-400",
   "In Progress": "bg-yellow-500",
@@ -688,6 +695,7 @@ const statusColors = ref({
   Stuck: "bg-red-500",
   Done: "bg-green-500",
 });
+
 const priorityColors = ref({
   Critical: "bg-red-500",
   High: "bg-orange-500",
@@ -695,11 +703,13 @@ const priorityColors = ref({
   Low: "bg-blue-500",
   "Best Effort": "bg-green-500",
 });
+
 const typeColors = ref({
   Bug: "bg-red-500",
   "Feature Enhancements": "bg-blue-500",
   Other: "bg-green-500",
 });
+
 const sortConfig = ref({});
 
 const filteredtitles = computed(() => {
